@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using GestionDesRessourcesMaterielles.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace GestionDesRessourcesMaterielles.Data
 {
@@ -9,5 +11,18 @@ namespace GestionDesRessourcesMaterielles.Data
             : base(options)
         {
         }
+        public DbSet<AppelOffre> AppelOffres { get; set; }
+        public DbSet<Besoin> Besoins { get; set; }
+        public DbSet<ChefDepartement> ChefDepartements { get; set; }
+        public DbSet<Departement> Departements { get; set; }
+        public DbSet<Fournisseur> Fournisseurs { get; set; }
+        public DbSet<Imprimante> Imprimantes { get; set; }
+        public DbSet<Ordinateur> Ordinateurs { get; set; }
+        public DbSet<Panne> Pannes { get; set; }
+        public DbSet<PersonneDepartement> PersonneDepartements { get; set; }
+        public DbSet<ResponsableRessources> ResponsableRessources { get; set; }
+        public DbSet<Ressource> Ressources { get; set; }
+        public DbSet<ServiceMaintenance> ServiceMaintenances { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
