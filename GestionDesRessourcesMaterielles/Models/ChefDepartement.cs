@@ -1,6 +1,6 @@
 ﻿namespace GestionDesRessourcesMaterielles.Models
 {
-    public class ChefDepartement
+    public class ChefDepartement : User
     {
     }
 }

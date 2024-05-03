@@ -1,6 +1,6 @@
 ﻿namespace GestionDesRessourcesMaterielles.Models
 {
-    public class ServiceMaintenance
+    public class ServiceMaintenance : User
     {
 
     }

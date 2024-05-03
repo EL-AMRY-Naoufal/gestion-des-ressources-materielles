@@ -1,12 +1,15 @@
-﻿namespace GestionDesRessourcesMaterielles.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GestionDesRessourcesMaterielles.Models
 {
     public class Panne
     {
-        private int PanneId {  get; set; }
-        private string Explication { get; set; }
-        private DateTime DateApparition { get; set; }
-        private Frequence frequence { get; set; }
-        private ClassificationPanne ClassificationPanne { get; set; }
+        [Key]
+        public int PanneId {  get; set; }
+        public string Explication { get; set; }
+        public DateTime DateApparition { get; set; }
+        public Frequence frequence { get; set; }
+        public ClassificationPanne ClassificationPanne { get; set; }
     }
 
     public enum Frequence

@@ -1,9 +1,11 @@
-﻿namespace GestionDesRessourcesMaterielles.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GestionDesRessourcesMaterielles.Models
 {
     public class Imprimante :Ressource
     {
-        private int Vitesseimpression { get; set; }
-        private string Resolution { get; set; }
-        private string Marque { get; set; }
+        public int Vitesseimpression { get; set; }
+        public string Resolution { get; set; }
+        public string Marque { get; set; }
     }
 }

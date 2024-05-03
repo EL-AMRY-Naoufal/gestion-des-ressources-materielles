@@ -1,6 +1,6 @@
 ﻿namespace GestionDesRessourcesMaterielles.Models
 {
-    public class ResponsableRessources
+    public class ResponsableRessources : User
     {
          
     }

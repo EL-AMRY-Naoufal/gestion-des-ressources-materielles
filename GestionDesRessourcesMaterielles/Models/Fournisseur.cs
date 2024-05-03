@@ -1,12 +1,12 @@
-﻿namespace GestionDesRessourcesMaterielles.Models
-{
-    public class Fournisseur
-    {
-        private int FournisseurId { get; set; }
-        private string Name { get; set; }
+﻿using System.ComponentModel.DataAnnotations;
 
-        private string NomSociete { get; set; }
-        private string Lieu { get; set; }
-        private string Gerant { get; set; }
+namespace GestionDesRessourcesMaterielles.Models
+{
+    public class Fournisseur : User
+    {
+        public string Name { get; set; }
+        public string NomSociete { get; set; }
+        public string Lieu { get; set; }
+        public string Gerant { get; set; }
     }
 }

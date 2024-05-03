@@ -1,15 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionDesRessourcesMaterielles.Models
 {
     public class Ressource
     {
-        private int NumeroInventaire { get; set; }
-        private DateTime DateLivraison { get; set; }
-        private int FournisseurId { get; set; }
+        [Key]
+        public int NumeroInventaire { get; set; }
+        public DateTime DateLivraison { get; set; }
+        public int FournisseurId { get; set; }
         [ForeignKey("PersonneDepartementID")]
-        private PersonneDepartement? PersonneDepartement { get; set; }
+        public PersonneDepartement? PersonneDepartement { get; set; }
         [ForeignKey("DepartementID")]
-        private Departement? Departement { get; set; }
+        public Departement? Departement { get; set; }
     }
 }

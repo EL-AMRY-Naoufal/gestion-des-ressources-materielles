@@ -1,12 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionDesRessourcesMaterielles.Models
 {
     public class Besoin
     {
-        private int BesoinId { get; set; }
-        private int Quantite { get; set; }
+        [Key]
+        public int BesoinId { get; set; }
+        public int Quantite { get; set; }
         [ForeignKey("RessourceId")]
-        private Ressource Ressource { get; set; }
+        public Ressource Ressource { get; set; }
     }
 }

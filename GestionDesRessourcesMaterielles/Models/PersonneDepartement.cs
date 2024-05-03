@@ -1,11 +1,12 @@
-﻿namespace GestionDesRessourcesMaterielles.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace GestionDesRessourcesMaterielles.Models
 {
-    public class PersonneDepartement
+    public class PersonneDepartement : User
     {
-        private int Id { get; set; }
-        private string Name { get; set; }
-        private Role Role { get; set; }
-        private string? Laboratoire { get; set; } // class ??
+        public string Name { get; set; }
+        public Role Role { get; set; }
+        public string? Laboratoire { get; set; } // class ??
     }
 
     public enum Role
