@@ -23,6 +23,5 @@ namespace GestionDesRessourcesMaterielles.Data
         public DbSet<ResponsableRessources> ResponsableRessources { get; set; }
         public DbSet<Ressource> Ressources { get; set; }
         public DbSet<ServiceMaintenance> ServiceMaintenances { get; set; }
-        public DbSet<User> Users { get; set; }
     }
 }
