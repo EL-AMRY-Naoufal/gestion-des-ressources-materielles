@@ -10,7 +10,5 @@ namespace GestionDesRessourcesMaterielles.Models
         public float Budget { get; set; }
         [ForeignKey("ChefDepartementID")]
         public ChefDepartement ChefDepartement { get; set; }
-
-
     }
 }
