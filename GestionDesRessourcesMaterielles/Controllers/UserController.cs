@@ -17,9 +17,9 @@ namespace GestionDesRessourcesMaterielles.Controllers
     {
         private readonly ApplicationDbContext _authContext;
 
-        public UserController(ApplicationDbContext _authContext)
+        public UserController(ApplicationDbContext applicationDbContext)
         {
-            _authContext = _authContext;
+            _authContext = applicationDbContext;
         }
 
         [HttpPost("authenticate")]
@@ -30,6 +30,8 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
             User chefDepartementUser = await _authContext.ChefDepartements.FirstOrDefaultAsync(user => user.Email == userCredential.Email);
             User fournisseurUser = await _authContext.Fournisseurs.FirstOrDefaultAsync(user => user.Email == userCredential.Email);
+            
+
 
             return Ok(new
             {
