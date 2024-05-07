@@ -38,8 +38,6 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
             var user = users.FirstOrDefault();
 
-            Console.WriteLine(user.Password);
-
             if(user == null)
                 return NotFound(new { Message = "User not found!" });
 
