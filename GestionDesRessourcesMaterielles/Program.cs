@@ -16,6 +16,17 @@ namespace GestionDesRessourcesMaterielles
 
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddCors(option =>
+            {
+                option.AddPolicy("MyPolicy", builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -70,6 +81,7 @@ namespace GestionDesRessourcesMaterielles
             
 
             app.UseHttpsRedirection();
+            app.UseCors("MyPolicy");
             app.UseStaticFiles();
 
             app.UseRouting();
