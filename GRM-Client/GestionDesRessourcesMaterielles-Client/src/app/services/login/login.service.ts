@@ -10,4 +10,7 @@ export class LoginService {
   private readonly baseUrl:string = "https://localhost:7159/api/User"
   constructor(private http:HttpClient, private router:Router) { }
   
+  login(loginObj:any){
+    return this.http.post<any>(`${this.baseUrl}authenticate`,loginObj);
+  }
 }
