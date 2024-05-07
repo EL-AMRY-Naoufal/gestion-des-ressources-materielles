@@ -6,11 +6,15 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './components/login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MainLayoutComponent } from './components/main-layout/main-layout.component';
+import { ListRessourcesComponent } from './components/list-ressources/list-ressources.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    MainLayoutComponent,
+    ListRessourcesComponent
   ],
   imports: [
     BrowserModule,
