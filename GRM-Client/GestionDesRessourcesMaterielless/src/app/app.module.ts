@@ -8,13 +8,15 @@ import { LoginComponent } from './components/login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MainLayoutComponent } from './components/main-layout/main-layout.component';
 import { ListRessourcesComponent } from './components/list-ressources/list-ressources.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MainLayoutComponent,
-    ListRessourcesComponent
+    ListRessourcesComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,
