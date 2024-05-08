@@ -1,0 +1,17 @@
+html,
+body {
+  height: 100%;
+  margin: 0px;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+}
+
+app-root{
+    height: 100%;
+}
+
