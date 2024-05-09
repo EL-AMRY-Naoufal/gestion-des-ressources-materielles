@@ -32,7 +32,6 @@ export class SidebarComponent implements OnInit {
 
   private getBodyWidth(): number {
     const bodyElement = this.elementRef.nativeElement.querySelector('#nav-bar');
-    console.log(bodyElement.offsetWidth);
     return bodyElement.offsetWidth + 30;
   }
 }
