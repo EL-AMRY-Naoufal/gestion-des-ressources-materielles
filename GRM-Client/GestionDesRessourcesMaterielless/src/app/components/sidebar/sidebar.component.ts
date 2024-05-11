@@ -34,4 +34,8 @@ export class SidebarComponent implements OnInit {
     const bodyElement = this.elementRef.nativeElement.querySelector('#nav-bar');
     return bodyElement.offsetWidth + 30;
   }
+
+  redirectToPage(url: string) {
+    window.location.href = url;
+  }
 }
