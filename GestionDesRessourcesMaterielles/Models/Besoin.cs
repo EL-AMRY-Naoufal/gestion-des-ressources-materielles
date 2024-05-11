@@ -8,6 +8,7 @@ namespace GestionDesRessourcesMaterielles.Models
         [Key]
         public int BesoinId { get; set; }
         public int Quantite { get; set; }
+
         [ForeignKey("RessourceId")]
         public Ressource Ressource { get; set; }
     }
