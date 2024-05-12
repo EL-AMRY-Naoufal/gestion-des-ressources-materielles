@@ -7,8 +7,8 @@ namespace GestionDesRessourcesMaterielles.Models
     {
         [Key]
         public int DepartmentId { get; set; }
+        public string Name { get; set; }
         public float Budget { get; set; }
-        [ForeignKey("ChefDepartementID")]
-        public ChefDepartement ChefDepartement { get; set; }
+        public bool CanRequestResources { get; set; }
     }
 }
