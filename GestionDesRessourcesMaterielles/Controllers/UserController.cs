@@ -29,27 +29,62 @@ namespace GestionDesRessourcesMaterielles.Controllers
             if (userCredential == null)
                 return BadRequest();
 
-            var users = new List<User>();
-            users.AddRange(await _authContext.ChefDepartements.Where(u => u.Email == userCredential.Email).ToListAsync());
-            users.AddRange(await _authContext.Fournisseurs.Where(u => u.Email == userCredential.Email).ToListAsync());
-            users.AddRange(await _authContext.PersonneDepartements.Where(u => u.Email == userCredential.Email).ToListAsync());
-            users.AddRange(await _authContext.ResponsableRessources.Where(u => u.Email == userCredential.Email).ToListAsync());
-            users.AddRange(await _authContext.ServiceMaintenances.Where(u => u.Email == userCredential.Email).ToListAsync());
-
-            var user = users.FirstOrDefault();
-
-            if(user == null)
-                return NotFound(new { Message = "User not found!" });
-
-            if (!VerifyPassword(userCredential.Password, user.Password))
-                return Unauthorized(new { Message = "Invalid password" });
-
-            return Ok(new
+            var chefDepartement = await _authContext.ChefDepartements.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
+            if (chefDepartement != null)
             {
-                Token = CreateJwtToken(user),
-                Message = "Login Succes",
-                User = user
-            });
+                return Ok(new
+                {
+                    Token = CreateJwtToken(chefDepartement),
+                    Message = "Login Success",
+                    User = chefDepartement 
+                });
+            }
+
+            var fournisseur = await _authContext.Fournisseurs.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
+            if (fournisseur != null)
+            {
+                return Ok(new
+                {
+                    Token = CreateJwtToken(fournisseur),
+                    Message = "Login Success",
+                    User = fournisseur 
+                });
+            }
+
+            var personneDepartement = await _authContext.PersonneDepartements.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
+            if (personneDepartement != null)
+            {
+                return Ok(new
+                {
+                    Token = CreateJwtToken(personneDepartement),
+                    Message = "Login Success",
+                    User = personneDepartement
+                });
+            }
+
+            var responsableRessources = await _authContext.ResponsableRessources.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
+            if (responsableRessources != null)
+            {
+                return Ok(new
+                {
+                    Token = CreateJwtToken(responsableRessources),
+                    Message = "Login Success",
+                    User = responsableRessources 
+                });
+            }
+
+            var serviceMaintenance = await _authContext.ServiceMaintenances.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
+            if (serviceMaintenance != null)
+            {
+                return Ok(new
+                {
+                    Token = CreateJwtToken(serviceMaintenance),
+                    Message = "Login Success",
+                    User = serviceMaintenance 
+                });
+            }
+
+            return NotFound(new { Message = "User not found!" });
         }
         private bool VerifyPassword(string enteredPassword, string hashedPassword)
         {
@@ -78,7 +113,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
             return jwtTokenHandler.WriteToken(token);
         }
 
-        [HttpPost("register")]
+        [HttpPost("registerFournisseur")]
         public async Task<IActionResult> RegisterFournisseur([FromBody] RegisterFournisseurModel model)
         {
             if (!ModelState.IsValid)
@@ -109,6 +144,82 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
             return Ok(new { Message = "Fournisseur registered successfully" });
         }
+
+        [HttpPost("registerChefDepartement")]
+        public async Task<IActionResult> RegisterChefDepartement([FromBody] RegisterChefDepartementModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (await _authContext.ChefDepartements.AnyAsync(u => u.Email == model.Email))
+            {
+                return Conflict(new { Message = "Email is already registered" });
+            }
+
+            var passwordHasher = new PasswordHasher<User>();
+            string hashedPassword = passwordHasher.HashPassword(null, model.Password);
+
+            // Retrieve the Departement from the database based on the provided DepartementId
+            var departement = await _authContext.Departements.FindAsync(model.DepartementId);
+            if (departement == null)
+            {
+                return NotFound(new { Message = "Departement not found" });
+            }
+
+            var chefDepartement = new ChefDepartement
+            {
+                Email = model.Email,
+                Password = hashedPassword,
+                Name = model.Name,
+                Departement = departement // Assign the retrieved Departement
+            };
+
+            _authContext.ChefDepartements.Add(chefDepartement);
+            await _authContext.SaveChangesAsync();
+
+            return Ok(new { Message = "Chef Departement registered successfully" });
+        }
+
+        [HttpPost("registerPersonneDepartement")]
+        public async Task<IActionResult> RegisterPersonneDepartement([FromBody] RegisterPersonneDepartementModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (await _authContext.PersonneDepartements.AnyAsync(u => u.Email == model.Email))
+            {
+                return Conflict(new { Message = "Email is already registered" });
+            }
+
+            var passwordHasher = new PasswordHasher<User>();
+            string hashedPassword = passwordHasher.HashPassword(null, model.Password);
+
+            // Retrieve the Departement from the database based on the provided DepartementId
+            var departement = await _authContext.Departements.FindAsync(model.DepartementId);
+            if (departement == null)
+            {
+                return NotFound(new { Message = "Departement not found" });
+            }
+
+            var personneDepartement = new PersonneDepartement
+            {
+                Email = model.Email,
+                Password = hashedPassword,
+                Name = model.Name,
+                Role = model.Role,
+                Laboratoire = model.Laboratoire,
+                Departement = departement // Assign the retrieved Departement
+            };
+
+            _authContext.PersonneDepartements.Add(personneDepartement);
+            await _authContext.SaveChangesAsync();
+
+            return Ok(new { Message = "Personne Departement registered successfully" });
+        }
     }
 
     public class UserCredential
@@ -125,5 +236,23 @@ namespace GestionDesRessourcesMaterielles.Controllers
         public string NomSociete { get; set; }
         public string Lieu { get; set; }
         public string Gerant { get; set; }
+    }
+
+    public class RegisterChefDepartementModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
+        public int DepartementId { get; set; } 
+    }
+
+    public class RegisterPersonneDepartementModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
+        public Role Role { get; set; }
+        public string Laboratoire { get; set; }
+        public int DepartementId { get; set; }
     }
 }
