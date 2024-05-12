@@ -5,7 +5,7 @@ namespace GestionDesRessourcesMaterielles.Models
     public class OrdinateurCatalog
     {
         [Key]
-        public string ImprimanteID { get; set; }
+        public string OrdinateurID { get; set; }
         public string Marque { get; set; }
         public string Cpu { get; set; }
         public string Ram { get; set; }
