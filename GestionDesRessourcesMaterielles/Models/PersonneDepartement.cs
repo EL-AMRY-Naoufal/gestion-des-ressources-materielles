@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionDesRessourcesMaterielles.Models
 {
@@ -9,6 +10,8 @@ namespace GestionDesRessourcesMaterielles.Models
         public Role Role { get; set; }
         public string? Laboratoire { get; set; } // class ??
 
+        [ForeignKey("DepartementID")]
+        public Departement Departement { get; set; }
     }
 
     public enum Role
