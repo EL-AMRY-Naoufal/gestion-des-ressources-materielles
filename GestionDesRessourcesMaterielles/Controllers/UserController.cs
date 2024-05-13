@@ -226,6 +226,35 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
             return Ok(new { Message = "Personne Departement registered successfully" });
         }
+
+        [HttpPost("registerResponsableRessources")]
+        public async Task<IActionResult> RegisterResponsableRessources([FromBody] RegisterResponsableRessourcesModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (await _authContext.ResponsableRessources.AnyAsync(u => u.Email == model.Email))
+            {
+                return Conflict(new { Message = "Email is already registered" });
+            }
+
+            var passwordHasher = new PasswordHasher<User>();
+            string hashedPassword = passwordHasher.HashPassword(null, model.Password);
+
+            var responsableRessources = new ResponsableRessources
+            {
+                Email = model.Email,
+                Password = hashedPassword,
+                Name = model.Name
+            };
+
+            _authContext.ResponsableRessources.Add(responsableRessources);
+            await _authContext.SaveChangesAsync();
+
+            return Ok(new { Message = "Responsable Ressources registered successfully" });
+        }
     }
 
     public class UserCredential
@@ -260,5 +289,12 @@ namespace GestionDesRessourcesMaterielles.Controllers
         public Role Role { get; set; }
         public string Laboratoire { get; set; }
         public int DepartementId { get; set; }
+    }
+
+    public class RegisterResponsableRessourcesModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Name { get; set; }
     }
 }
