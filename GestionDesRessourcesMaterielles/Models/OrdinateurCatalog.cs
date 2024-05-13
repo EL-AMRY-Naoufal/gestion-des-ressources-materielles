@@ -1,15 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionDesRessourcesMaterielles.Models
 {
-    public class OrdinateurCatalog
+    [Table("OrdinateurCatalog")]
+    public class OrdinateurCatalog : RessourceCatalog
     {
-        [Key]
-        public string OrdinateurID { get; set; }
         public string Marque { get; set; }
         public string Cpu { get; set; }
         public string Ram { get; set; }
         public string DisqueDur { get; set; }
         public string Ecran { get; set; }
+        
     }
 }
