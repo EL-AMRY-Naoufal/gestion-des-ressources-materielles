@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace GestionDesRessourcesMaterielles.Models
 {
@@ -15,5 +16,7 @@ namespace GestionDesRessourcesMaterielles.Models
         public DateTime DateRequested { get; set; }
         public bool? IsSentByChefDepartement { get; set; }
         public bool? IsApprovedByResponsableRessource { get; set; }
+        [JsonIgnore]
+        public AppelOffre? AppelOffre { get; set; }
     }
 }
