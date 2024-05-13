@@ -9,6 +9,6 @@ namespace GestionDesRessourcesMaterielles.Models
         public int DepartmentId { get; set; }
         public string Name { get; set; }
         public float Budget { get; set; }
-        public bool CanRequestResources { get; set; }
+
     }
 }
