@@ -12,6 +12,7 @@ namespace GestionDesRessourcesMaterielles.Models
 
         [ForeignKey("DepartementID")]
         public Departement Departement { get; set; }
+        public bool CanRequestResources { get; set; }
     }
 
     public enum Role
