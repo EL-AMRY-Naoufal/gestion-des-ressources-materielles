@@ -1,6 +1,7 @@
 ﻿using GestionDesRessourcesMaterielles.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 
 namespace GestionDesRessourcesMaterielles.Controllers
 {
@@ -27,6 +28,12 @@ namespace GestionDesRessourcesMaterielles.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        [Route("/privacy")]
+        public string Get(string s) {
+            return s;
         }
     }
 }

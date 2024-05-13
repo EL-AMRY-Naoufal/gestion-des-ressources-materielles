@@ -29,30 +29,36 @@ namespace GestionDesRessourcesMaterielles.Controllers
             if (userCredential == null)
                 return BadRequest();
 
-            var chefDepartement = await _authContext.ChefDepartements.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
-            if (chefDepartement != null)
+            // Try to authenticate each type of user
+            var chefDepartement = await _authContext.ChefDepartements
+                                 .Include(cd => cd.Departement) // Include the Departement property
+                                 .FirstOrDefaultAsync(u => u.Email == userCredential.Email);
+
+            if (chefDepartement != null && VerifyPassword(userCredential.Password, chefDepartement.Password))
             {
                 return Ok(new
                 {
                     Token = CreateJwtToken(chefDepartement),
                     Message = "Login Success",
-                    User = chefDepartement 
+                    User = chefDepartement
                 });
             }
 
             var fournisseur = await _authContext.Fournisseurs.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
-            if (fournisseur != null)
+            if (fournisseur != null && VerifyPassword(userCredential.Password, fournisseur.Password))
             {
                 return Ok(new
                 {
                     Token = CreateJwtToken(fournisseur),
                     Message = "Login Success",
-                    User = fournisseur 
+                    User = fournisseur
                 });
             }
 
-            var personneDepartement = await _authContext.PersonneDepartements.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
-            if (personneDepartement != null)
+            var personneDepartement = await _authContext.PersonneDepartements
+                                     .Include(cd => cd.Departement) 
+                                     .FirstOrDefaultAsync(u => u.Email == userCredential.Email);
+            if (personneDepartement != null && VerifyPassword(userCredential.Password, personneDepartement.Password))
             {
                 return Ok(new
                 {
@@ -63,28 +69,28 @@ namespace GestionDesRessourcesMaterielles.Controllers
             }
 
             var responsableRessources = await _authContext.ResponsableRessources.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
-            if (responsableRessources != null)
+            if (responsableRessources != null && VerifyPassword(userCredential.Password, responsableRessources.Password))
             {
                 return Ok(new
                 {
                     Token = CreateJwtToken(responsableRessources),
                     Message = "Login Success",
-                    User = responsableRessources 
+                    User = responsableRessources
                 });
             }
 
             var serviceMaintenance = await _authContext.ServiceMaintenances.FirstOrDefaultAsync(u => u.Email == userCredential.Email);
-            if (serviceMaintenance != null)
+            if (serviceMaintenance != null && VerifyPassword(userCredential.Password, serviceMaintenance.Password))
             {
                 return Ok(new
                 {
                     Token = CreateJwtToken(serviceMaintenance),
                     Message = "Login Success",
-                    User = serviceMaintenance 
+                    User = serviceMaintenance
                 });
             }
 
-            return NotFound(new { Message = "User not found!" });
+            return NotFound(new { Message = "User not found or invalid credentials!" });
         }
         private bool VerifyPassword(string enteredPassword, string hashedPassword)
         {
