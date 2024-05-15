@@ -47,17 +47,17 @@ namespace GestionDesRessourcesMaterielles.Controllers
         }
 
         [HttpPost("approveBesoins")]
-        public async Task<IActionResult> ApproveBesoins(int userId, [FromBody] List<int> besoinIds)
+        public async Task<IActionResult> ApproveBesoins([FromBody] ApprovalRequestModel model)
         {
             try
             {
-                var chefDepartement = await _authContext.ChefDepartements.FirstOrDefaultAsync(c => c.UserId == userId);
+                var chefDepartement = await _authContext.ChefDepartements.FirstOrDefaultAsync(c => c.UserId == model.UserId);
                 if (chefDepartement == null)
                 {
                     return NotFound("Chef Departement not found");
                 }
 
-                var besoins = await _authContext.Besoins.Where(b => besoinIds.Contains(b.BesoinId)).ToListAsync();
+                var besoins = await _authContext.Besoins.Where(b => model.BesoinIds.Contains(b.BesoinId)).ToListAsync();
                 if (besoins == null || !besoins.Any())
                 {
                     return NotFound("No besoins found to approve");
@@ -65,7 +65,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
                 foreach (var besoin in besoins)
                 {
-                    besoin.IsSentByChefDepartement = true; 
+                    besoin.IsSentByChefDepartement = true;
                 }
 
                 await _authContext.SaveChangesAsync();
@@ -77,6 +77,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
 
         [HttpGet("GetBesoinsForChefDepartement")]
         public async Task<ActionResult<List<Besoin>>> GetBesoinsForChefDepartement(int userId)
@@ -95,7 +96,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
                 // Retrieve the besoins associated with the ChefDepartement's Departement
                 var besoins = await _authContext.Besoins
-                    .Where(b => b.PersonneDepartementId.Departement.DepartmentId == chefDepartement.Departement.DepartmentId)
+                    .Where(b => b.PersonneDepartementId.Departement.DepartmentId == chefDepartement.Departement.DepartmentId && b.IsSentByChefDepartement == null)
                     .Include(b => b.PersonneDepartementId) // Include PersonneDepartementId
                     .Include(b => b.RessourceCatalogteId) // Include RessourceCatalogteId
                     .ToListAsync();
@@ -110,7 +111,49 @@ namespace GestionDesRessourcesMaterielles.Controllers
             }
         }
 
-    }
+        [HttpGet("GetResourcesForDepartement")]
+        public async Task<ActionResult> GetResourcesForDepartement(int departementId)
+        {
+            try
+            {
+                // Find the department based on the departmentId
+                var department = await _authContext.Departements.FindAsync(departementId);
+                if (department == null)
+                {
+                    return NotFound($"Department with ID {departementId} not found");
+                }
 
+                // Retrieve all Ordinateurs associated with the department
+                var ordinateurs = await _authContext.Ordinateurs
+                    .Where(o => o.Departement.DepartmentId == departementId)
+                    .Include(o => o.PersonneDepartement) // Include PersonneDepartement
+                    .ToListAsync();
+
+                // Retrieve all Imprimantes associated with the department
+                var imprimantes = await _authContext.Imprimantes
+                    .Where(i => i.Departement.DepartmentId == departementId)
+                    .Include(i => i.PersonneDepartement) // Include PersonneDepartement
+                    .ToListAsync();
+
+                // You can process the ordinateurs and imprimantes lists here as needed
+                // For example, you can return them as JSON objects
+
+                return Ok(new { Ordinateurs = ordinateurs, Imprimantes = imprimantes });
+            }
+            catch (Exception ex)
+            {
+                // Return a 500 Internal Server Error if an exception occurs
+                return StatusCode(500, $"An error occurred while fetching resources: {ex.Message}");
+            }
+        }
+
+
+
+    }
+    public class ApprovalRequestModel
+    {
+        public int UserId { get; set; }
+        public List<int> BesoinIds { get; set; }
+    }
 
 }

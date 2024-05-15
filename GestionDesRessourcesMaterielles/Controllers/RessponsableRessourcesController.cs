@@ -22,10 +22,10 @@ namespace GestionDesRessourcesMaterielles.Controllers
         {
             try
             {
-                // Get the besoins sent by the chef departement
                 var besoins = await _authContext.Besoins
-                    .Where(b => b.IsSentByChefDepartement == true)
-                    .Include(b => b.RessourceCatalogteId)
+                    .Where(b => b.IsSentByChefDepartement == true && b.IsApprovedByResponsableRessource == null)
+                    .Include(b => b.PersonneDepartementId) 
+                    .Include(b => b.RessourceCatalogteId) 
                     .ToListAsync();
 
                 return Ok(besoins);
@@ -41,11 +41,10 @@ namespace GestionDesRessourcesMaterielles.Controllers
         {
             try
             {
-                // Group besoins by department
                         var besoinsByDepartement = await _authContext.Besoins
                     .Where(b => b.IsSentByChefDepartement == true && b.IsApprovedByResponsableRessource == null)
                     .Include(b => b.PersonneDepartementId)
-                        .ThenInclude(p => p.Departement) // Include the Departement navigation property
+                        .ThenInclude(p => p.Departement) 
                     .GroupBy(b => b.PersonneDepartementId.Departement)
                     .ToListAsync();
 
@@ -65,10 +64,8 @@ namespace GestionDesRessourcesMaterielles.Controllers
                         Besoins = besoinsToApprove
                     };
 
-                    // Add the AppelOffre entity to the context
                     _authContext.AppelOffres.Add(appelOffre);
 
-                    // Mark all besoins as approved and associate them with the AppelOffre
                     foreach (var besoin in besoinsToApprove)
                     {
                         besoin.IsApprovedByResponsableRessource = true;
@@ -76,7 +73,6 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     }
                 }
 
-                // Save changes to the database
                 await _authContext.SaveChangesAsync();
 
                 return Ok("All besoins approved and associated with AppelOffres");
@@ -140,6 +136,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
                 if (accept && departement.Budget < offreFournisseur.Montant)
                 {
+                    offreFournisseur.IsAccepted = false;
                     return BadRequest("Department budget is not sufficient for this offer");
                 }
 

@@ -128,5 +128,142 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [HttpGet("acceptedOffresFournisseur")]
+        public async Task<IActionResult> GetAcceptedOffresFournisseur(int fournisseurId)
+        {
+            try
+            {
+                var offres = await _authContext.offreFournisseurs
+                                    .Where(o => o.FournisseurId.UserId == fournisseurId && o.IsAccepted == true && o.IsApproved == false)
+                                    .Include(o => o.FournisseurId)
+                                    .Include(o => o.AppelOffreId)
+                                        .ThenInclude(a => a.Departement)
+                                    .Include(o => o.AppelOffreId)
+                                        .ThenInclude(a => a.Besoins)
+                                            .ThenInclude(b => b.RessourceCatalogteId)
+                                    .Include(o => o.AppelOffreId)
+                                        .ThenInclude(a => a.Besoins)
+                                            .ThenInclude(b => b.PersonneDepartementId) 
+                                    .ToListAsync();
+
+                return Ok(offres);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost("createRessource")]
+        public async Task<IActionResult> CreateRessource(int fournisseurID, int appelOffreID, DateTime deliveryDate)
+        {
+            try
+            {
+                var fournisseur = await _authContext.Fournisseurs.FindAsync(fournisseurID);
+                if (fournisseur == null)
+                {
+                    return NotFound("Fournisseur not found");
+                }
+
+                var besoins = await _authContext.Besoins
+                    .Include(b => b.RessourceCatalogteId)
+                    .Include(b => b.PersonneDepartementId)
+                    .ThenInclude(pd => pd.Departement) // Include the Departement from PersonneDepartement
+                    .Include(b => b.AppelOffre) // Include the AppelOffre
+                    .Where(b => b.AppelOffre.AppelOffreID == appelOffreID)
+                    .ToListAsync();
+
+                if (besoins == null || !besoins.Any())
+                {
+                    return NotFound("No Besoins found for the specified AppelOffre");
+                }
+
+                // Loop through each Besoin and create the corresponding Ressource
+                foreach (var besoin in besoins)
+                {
+                    // Create the corresponding Ressource based on the type of RessourceCatalog
+                    if (besoin.RessourceCatalogteId is OrdinateurCatalog ordinateurCatalog)
+                    {
+                        // If it's an OrdinateurCatalog, create an Ordinateur
+                        var ordinateur = new Ordinateur
+                        {
+                            Marque = ordinateurCatalog.Marque,
+                            Cpu = ordinateurCatalog.Cpu,
+                            Ram = ordinateurCatalog.Ram,
+                            DisqueDur = ordinateurCatalog.DisqueDur,
+                            Ecran = ordinateurCatalog.Ecran,
+                            DateLivraison = deliveryDate,
+                            FournisseurId = fournisseur,
+                            PersonneDepartement = besoin.PersonneDepartementId,
+                            Departement = besoin.PersonneDepartementId?.Departement
+                        };
+
+                        _authContext.Ordinateurs.Add(ordinateur);
+                    }
+                    else if (besoin.RessourceCatalogteId is ImprimanteCatalog imprimanteCatalog)
+                    {
+                        // If it's an ImprimanteCatalog, create an Imprimante
+                        var imprimante = new Imprimante
+                        {
+                            Vitesseimpression = imprimanteCatalog.Vitesseimpression,
+                            Resolution = imprimanteCatalog.Resolution,
+                            Marque = imprimanteCatalog.Marque,
+                            DateLivraison = deliveryDate,
+                            FournisseurId = fournisseur,
+                            PersonneDepartement = besoin.PersonneDepartementId,
+                            Departement = besoin.PersonneDepartementId?.Departement
+                        };
+
+                        // Add the Imprimante to the context
+                        _authContext.Imprimantes.Add(imprimante);
+                    }
+                    var offresFournisseur = await _authContext.offreFournisseurs
+                                            .Where(o => o.AppelOffreId.AppelOffreID == besoin.AppelOffre.AppelOffreID)
+                                            .ToListAsync();
+
+                    if (offresFournisseur == null || !offresFournisseur.Any())
+                    {
+                        return NotFound("No OffreFournisseur found for the specified AppelOffre");
+                    }
+
+                    // Loop through each OffreFournisseur and set IsApproved to true
+                    foreach (var offreFournisseur in offresFournisseur)
+                    {
+                        offreFournisseur.IsApproved = true;
+                    }
+
+                    // Save changes to the database
+                    await _authContext.SaveChangesAsync();
+                }
+
+                // Save changes to the context
+                await _authContext.SaveChangesAsync();
+
+                return Ok("Ressources created successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpGet("catalogs")]
+        public async Task<IActionResult> GetCatalogs()
+        {
+            try
+            {
+                var imprimantCatalogs = await _authContext.ImprimanteCatalog.ToListAsync();
+                var ordinateurCatalogs = await _authContext.OrdinateurCatalog.ToListAsync();
+
+                return Ok(new { ImprimantCatalogs = imprimantCatalogs, OrdinateurCatalogs = ordinateurCatalogs });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
     }
 }
+

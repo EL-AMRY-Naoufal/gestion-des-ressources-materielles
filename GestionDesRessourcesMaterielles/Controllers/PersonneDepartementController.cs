@@ -1,4 +1,4 @@
-﻿using GestionDesRessourcesMaterielles.Data;
+using GestionDesRessourcesMaterielles.Data;
 using GestionDesRessourcesMaterielles.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -47,11 +47,12 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     var besoin = new Besoin
                     {
                         PersonneDepartementId = personne,
-                        RessourceCatalogteId = ressourceCatalog, 
+                        RessourceCatalogteId = ressourceCatalog,
                         NumberOfRessource = numberOfBesoin,
                         DateRequested = DateTime.Now,
-                        IsSentByChefDepartement = null, 
-                        IsApprovedByResponsableRessource = null 
+                        IsSentByChefDepartement = null,
+                        IsApprovedByResponsableRessource = null,
+                        AppelOffre = null
                     };
 
                     _authContext.Besoins.Add(besoin);
@@ -71,11 +72,11 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     var besoin = new Besoin
                     {
                         PersonneDepartementId = personne,
-                        RessourceCatalogteId = ressourceCatalog, 
+                        RessourceCatalogteId = ressourceCatalog,
                         NumberOfRessource = numberOfBesoin,
                         DateRequested = DateTime.Now,
-                        IsSentByChefDepartement = null, 
-                        IsApprovedByResponsableRessource = null 
+                        IsSentByChefDepartement = null,
+                        IsApprovedByResponsableRessource = null
                     };
 
                     _authContext.Besoins.Add(besoin);
@@ -97,8 +98,8 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
     public class ResourceRequestModel
     {
-        public int PersonneId { get; set; } 
-        public Dictionary<string, int> ImprimanteRequests { get; set; } 
-        public Dictionary<string, int> OrdinateurRequests { get; set; } 
+        public int PersonneId { get; set; }
+        public Dictionary<string, int> ImprimanteRequests { get; set; }
+        public Dictionary<string, int> OrdinateurRequests { get; set; }
     }
 }

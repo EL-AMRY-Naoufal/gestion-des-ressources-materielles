@@ -40,7 +40,8 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 {
                     Token = CreateJwtToken(chefDepartement),
                     Message = "Login Success",
-                    User = chefDepartement
+                    User = chefDepartement,
+                    Role = "chefDepartement"
                 });
             }
 
@@ -51,7 +52,8 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 {
                     Token = CreateJwtToken(fournisseur),
                     Message = "Login Success",
-                    User = fournisseur
+                    User = fournisseur,
+                    Role = "fournisseur"
                 });
             }
 
@@ -64,7 +66,8 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 {
                     Token = CreateJwtToken(personneDepartement),
                     Message = "Login Success",
-                    User = personneDepartement
+                    User = personneDepartement,
+                    Role = "personneDepartement"
                 });
             }
 
@@ -75,7 +78,8 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 {
                     Token = CreateJwtToken(responsableRessources),
                     Message = "Login Success",
-                    User = responsableRessources
+                    User = responsableRessources,
+                    Role = "responsableRessources"
                 });
             }
 
@@ -86,7 +90,8 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 {
                     Token = CreateJwtToken(serviceMaintenance),
                     Message = "Login Success",
-                    User = serviceMaintenance
+                    User = serviceMaintenance,
+                    Role = "serviceMaintenance"
                 });
             }
 
