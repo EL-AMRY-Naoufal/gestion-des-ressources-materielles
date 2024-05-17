@@ -12,14 +12,33 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {MatButtonModule} from '@angular/material/button';
+import {TooltipPosition, MatTooltipModule} from '@angular/material/tooltip';
+import {MatTabsModule} from '@angular/material/tabs';
+import { ListeBesoinComponent } from './components/liste-besoin/liste-besoin.component';
+import { SendBesoinsComponent } from './components/send-besoins/send-besoins.component';
 
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
+import { AppelOffresComponent } from './components/appel-offres/appel-offres.component';
+import {MatExpansionModule} from '@angular/material/expansion';
+import { OffreFournisseurComponent } from './components/offre-fournisseur/offre-fournisseur.component';
+import { AcceptedFournisseurOffreComponent } from './components/accepted-fournisseur-offre/accepted-fournisseur-offre.component';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {provideNativeDateAdapter} from '@angular/material/core';
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MainLayoutComponent,
     ListRessourcesComponent,
-    SidebarComponent
+    SidebarComponent,
+    ListeBesoinComponent,
+    SendBesoinsComponent,
+    AppelOffresComponent,
+    OffreFournisseurComponent,
+    AcceptedFournisseurOffreComponent
   ],
   imports: [
     BrowserModule,
@@ -27,10 +46,20 @@ import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
     HttpClientModule,
     ReactiveFormsModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatButtonModule,
+    MatTooltipModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatExpansionModule,
+    MatDatepickerModule,
+    MatFormFieldModule
   ],
   providers: [
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    provideNativeDateAdapter()
   ],
   bootstrap: [AppComponent]
 })
