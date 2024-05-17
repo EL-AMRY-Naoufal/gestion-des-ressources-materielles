@@ -1,28 +1,43 @@
-import { Component, ElementRef, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { LoginService } from '../../services/login/login.service';
 
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss'
+  styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent implements OnInit {
-  @Output() sidebarStatusChanged = new EventEmitter<{ isOpen: boolean, width: number }>();
-  isSidebarOpen = false; // Assuming sidebar is initially open
+  @Output() sidebarStatusChanged = new EventEmitter<{
+    isOpen: boolean;
+    width: number;
+  }>();
 
-  constructor(private elementRef: ElementRef) {}
+  isSidebarOpen = false;
+
+  currentUser: any;
+
+  constructor(private elementRef: ElementRef, private loginService: LoginService) {}
 
   ngOnInit(): void {
-    this.sidebarStatusChanged.emit({ isOpen: this.isSidebarOpen, width: this.getBodyWidth() });
+    this.currentUser = this.loginService.getUser();
+    console.log(this.currentUser)
+    this.sidebarStatusChanged.emit({
+      isOpen: this.isSidebarOpen,
+      width: this.getBodyWidth(),
+    });
   }
 
   toggleSidebar() {
-    // Toggle the sidebar status
     this.isSidebarOpen = !this.isSidebarOpen;
-    
-    // Emit the updated sidebar status and width after a short delay
     setTimeout(() => {
       this.emitSidebarStatusAndWidth();
-    }, 200); // Adjust the delay time as needed based on your sidebar animation duration
+    }, 200);
   }
 
   private emitSidebarStatusAndWidth(): void {
