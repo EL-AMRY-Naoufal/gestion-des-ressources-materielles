@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+
+h2, h3, h4 {
+    font-size: 1em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.mat-table{
+    border-bottom: #333 solid 3px;
+}
+
+.bot{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    width: 100%;
+}
