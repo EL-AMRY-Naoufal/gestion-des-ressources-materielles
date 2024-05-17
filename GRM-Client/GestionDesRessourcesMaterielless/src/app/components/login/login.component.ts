@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoginService } from '../../services/login.service';
+import { LoginService } from '../../services/login/login.service';
 import { NgToastService } from 'ng-angular-popup';
 import { Router } from '@angular/router';
 
@@ -37,6 +37,8 @@ export class LoginComponent implements OnInit {
         });
         this.loginForm.reset();
         this.loginService.storeToken(res.token);
+        this.loginService.storeUser(res.user);
+        this.loginService.storeRole(res.role)
         this.router.navigate(["/mainLayout/listeRessources"])
       },
       error: (err) => {
