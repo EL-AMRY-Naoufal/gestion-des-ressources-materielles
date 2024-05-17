@@ -17,19 +17,19 @@ namespace GestionDesRessourcesMaterielles.Controllers
         }
 
         [HttpPost("submitOffer")]
-        public async Task<IActionResult> SubmitOffer(int appelOffreId, int fournisseurId, double montant)
+        public async Task<IActionResult> SubmitOffer([FromBody] SubmitOfferRequest request)
         {
             try
             {
                 // Check if the AppelOffre exists
-                var appelOffre = await _authContext.AppelOffres.FindAsync(appelOffreId);
+                var appelOffre = await _authContext.AppelOffres.FindAsync(request.AppelOffreId);
                 if (appelOffre == null)
                 {
                     return NotFound("AppelOffre not found");
                 }
 
                 // Check if the Fournisseur exists
-                var fournisseur = await _authContext.Fournisseurs.FindAsync(fournisseurId);
+                var fournisseur = await _authContext.Fournisseurs.FindAsync(request.FournisseurId);
                 if (fournisseur == null)
                 {
                     return NotFound("Fournisseur not found");
@@ -40,7 +40,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 {
                     AppelOffreId = appelOffre,
                     FournisseurId = fournisseur,
-                    Montant = montant,
+                    Montant = request.Montant,
                     DateSoumission = DateTime.Now
                 };
 
@@ -57,18 +57,46 @@ namespace GestionDesRessourcesMaterielles.Controllers
         }
 
         [HttpGet("appelOffres")]
-        public async Task<IActionResult> GetAppelOffres()
+        public async Task<IActionResult> GetAppelOffres(int fournisseurId)
         {
             try
             {
-                // Retrieve all available AppelOffres
                 var appelOffres = await _authContext.AppelOffres
                     .Include(a => a.Departement)
                     .Include(a => a.Besoins)
                     .ThenInclude(b => b.RessourceCatalogteId)
+                    .Where(a => !_authContext.offreFournisseurs.Any(o => o.AppelOffreId.AppelOffreID == a.AppelOffreID && o.FournisseurId.UserId == fournisseurId))
                     .ToListAsync();
 
-                return Ok(appelOffres);
+                var result = appelOffres.Select(a => new AppelOffreDto
+                {
+                    AppelOffreID = a.AppelOffreID,
+                    DepartementName = a.Departement?.Name,
+                    OrdinateurBesoins = a.Besoins
+                        .Where(b => b.RessourceCatalogteId is OrdinateurCatalog)
+                        .Select(b => new OrdinateurBesoinDto
+                        {
+                            BesoinId = b.BesoinId,
+                            Marque = (b.RessourceCatalogteId as OrdinateurCatalog)?.Marque,
+                            Cpu = (b.RessourceCatalogteId as OrdinateurCatalog)?.Cpu,
+                            Ram = (b.RessourceCatalogteId as OrdinateurCatalog)?.Ram,
+                            DisqueDur = (b.RessourceCatalogteId as OrdinateurCatalog)?.DisqueDur,
+                            Ecran = (b.RessourceCatalogteId as OrdinateurCatalog)?.Ecran,
+                            NumberOfRessource = b.NumberOfRessource
+                        }).ToList(),
+                    ImprimanteBesoins = a.Besoins
+                        .Where(b => b.RessourceCatalogteId is ImprimanteCatalog)
+                        .Select(b => new ImprimanteBesoinDto
+                        {
+                            BesoinId = b.BesoinId,
+                            Marque = (b.RessourceCatalogteId as ImprimanteCatalog)?.Marque,
+                            Vitesseimpression = (b.RessourceCatalogteId as ImprimanteCatalog)?.Vitesseimpression ?? 0,
+                            Resolution = (b.RessourceCatalogteId as ImprimanteCatalog)?.Resolution,
+                            NumberOfRessource = b.NumberOfRessource
+                        }).ToList()
+                }).ToList();
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -76,13 +104,16 @@ namespace GestionDesRessourcesMaterielles.Controllers
             }
         }
 
+
         [HttpPost("changeMontant")]
-        public async Task<IActionResult> SubmitOffer(int offreFournisseurId, double montant)
+        public async Task<IActionResult> SubmitOffer([FromBody] UpdateOfferDto updateOfferDto)
         {
             try
             {
                 // Check if the existing OffreFournisseur exists
-                var existingOffer = await _authContext.offreFournisseurs.FindAsync(offreFournisseurId);
+                var existingOffer = await _authContext.offreFournisseurs
+                                           .FirstOrDefaultAsync(o => o.AppelOffreId.AppelOffreID == updateOfferDto.AppelOffreId);
+
                 if (existingOffer == null)
                 {
                     return NotFound("OffreFournisseur not found");
@@ -95,7 +126,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
                 }
 
                 // Update the montant of the existing offer
-                existingOffer.Montant = montant;
+                existingOffer.Montant = updateOfferDto.Montant;
                 existingOffer.DateSoumission = DateTime.Now;
 
                 // Save changes to the database
@@ -114,14 +145,46 @@ namespace GestionDesRessourcesMaterielles.Controllers
         {
             try
             {
-                // Retrieve non-treated offers for the specified Fournisseur
-                var offres = await _authContext.offreFournisseurs
-                    .Where(o => o.FournisseurId.UserId == fournisseurId && o.IsAccepted == null)
-                    .Include(o => o.FournisseurId)
-                    .Include(o => o.AppelOffreId)
+                var appelOffres = await _authContext.AppelOffres
+                    .Include(a => a.Departement)
+                    .Include(a => a.Besoins)
+                    .ThenInclude(b => b.RessourceCatalogteId)
+                    .Where(a => _authContext.offreFournisseurs.Any(o => o.AppelOffreId.AppelOffreID == a.AppelOffreID && o.FournisseurId.UserId == fournisseurId))
                     .ToListAsync();
 
-                return Ok(offres);
+                var result = appelOffres.Select(a => new AppelOffreDto
+                {
+                    AppelOffreID = a.AppelOffreID,
+                    DepartementName = a.Departement?.Name,
+                    OrdinateurBesoins = a.Besoins
+                        .Where(b => b.RessourceCatalogteId is OrdinateurCatalog)
+                        .Select(b => new OrdinateurBesoinDto
+                        {
+                            BesoinId = b.BesoinId,
+                            Marque = (b.RessourceCatalogteId as OrdinateurCatalog)?.Marque,
+                            Cpu = (b.RessourceCatalogteId as OrdinateurCatalog)?.Cpu,
+                            Ram = (b.RessourceCatalogteId as OrdinateurCatalog)?.Ram,
+                            DisqueDur = (b.RessourceCatalogteId as OrdinateurCatalog)?.DisqueDur,
+                            Ecran = (b.RessourceCatalogteId as OrdinateurCatalog)?.Ecran,
+                            NumberOfRessource = b.NumberOfRessource
+                        }).ToList(),
+                    ImprimanteBesoins = a.Besoins
+                        .Where(b => b.RessourceCatalogteId is ImprimanteCatalog)
+                        .Select(b => new ImprimanteBesoinDto
+                        {
+                            BesoinId = b.BesoinId,
+                            Marque = (b.RessourceCatalogteId as ImprimanteCatalog)?.Marque,
+                            Vitesseimpression = (b.RessourceCatalogteId as ImprimanteCatalog)?.Vitesseimpression ?? 0,
+                            Resolution = (b.RessourceCatalogteId as ImprimanteCatalog)?.Resolution,
+                            NumberOfRessource = b.NumberOfRessource
+                        }).ToList(),
+                    IsAccepted = _authContext.offreFournisseurs
+                                .Where(o => o.AppelOffreId.AppelOffreID == a.AppelOffreID && o.FournisseurId.UserId == fournisseurId)
+                                .Select(o => o.IsAccepted)
+                                .FirstOrDefault()
+                }).ToList();
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -134,20 +197,42 @@ namespace GestionDesRessourcesMaterielles.Controllers
         {
             try
             {
-                var offres = await _authContext.offreFournisseurs
-                                    .Where(o => o.FournisseurId.UserId == fournisseurId && o.IsAccepted == true && o.IsApproved == false)
-                                    .Include(o => o.FournisseurId)
-                                    .Include(o => o.AppelOffreId)
-                                        .ThenInclude(a => a.Departement)
-                                    .Include(o => o.AppelOffreId)
-                                        .ThenInclude(a => a.Besoins)
-                                            .ThenInclude(b => b.RessourceCatalogteId)
-                                    .Include(o => o.AppelOffreId)
-                                        .ThenInclude(a => a.Besoins)
-                                            .ThenInclude(b => b.PersonneDepartementId) 
-                                    .ToListAsync();
+                var appelOffres = await _authContext.AppelOffres
+                    .Include(a => a.Departement)
+                    .Include(a => a.Besoins)
+                    .ThenInclude(b => b.RessourceCatalogteId)
+                    .Where(a => _authContext.offreFournisseurs.Any(o => o.AppelOffreId.AppelOffreID == a.AppelOffreID && o.FournisseurId.UserId == fournisseurId && o.IsAccepted == true))
+                    .ToListAsync();
 
-                return Ok(offres);
+                var result = appelOffres.Select(a => new AppelOffreDto
+                {
+                    AppelOffreID = a.AppelOffreID,
+                    DepartementName = a.Departement?.Name,
+                    OrdinateurBesoins = a.Besoins
+                        .Where(b => b.RessourceCatalogteId is OrdinateurCatalog)
+                        .Select(b => new OrdinateurBesoinDto
+                        {
+                            BesoinId = b.BesoinId,
+                            Marque = (b.RessourceCatalogteId as OrdinateurCatalog)?.Marque,
+                            Cpu = (b.RessourceCatalogteId as OrdinateurCatalog)?.Cpu,
+                            Ram = (b.RessourceCatalogteId as OrdinateurCatalog)?.Ram,
+                            DisqueDur = (b.RessourceCatalogteId as OrdinateurCatalog)?.DisqueDur,
+                            Ecran = (b.RessourceCatalogteId as OrdinateurCatalog)?.Ecran,
+                            NumberOfRessource = b.NumberOfRessource
+                        }).ToList(),
+                    ImprimanteBesoins = a.Besoins
+                        .Where(b => b.RessourceCatalogteId is ImprimanteCatalog)
+                        .Select(b => new ImprimanteBesoinDto
+                        {
+                            BesoinId = b.BesoinId,
+                            Marque = (b.RessourceCatalogteId as ImprimanteCatalog)?.Marque,
+                            Vitesseimpression = (b.RessourceCatalogteId as ImprimanteCatalog)?.Vitesseimpression ?? 0,
+                            Resolution = (b.RessourceCatalogteId as ImprimanteCatalog)?.Resolution,
+                            NumberOfRessource = b.NumberOfRessource
+                        }).ToList()
+                }).ToList();
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -156,11 +241,11 @@ namespace GestionDesRessourcesMaterielles.Controllers
         }
 
         [HttpPost("createRessource")]
-        public async Task<IActionResult> CreateRessource(int fournisseurID, int appelOffreID, DateTime deliveryDate)
+        public async Task<IActionResult> CreateRessource([FromBody] CreateRessourceDto createRessourceDto)
         {
             try
             {
-                var fournisseur = await _authContext.Fournisseurs.FindAsync(fournisseurID);
+                var fournisseur = await _authContext.Fournisseurs.FindAsync(createRessourceDto.FournisseurID);
                 if (fournisseur == null)
                 {
                     return NotFound("Fournisseur not found");
@@ -171,7 +256,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     .Include(b => b.PersonneDepartementId)
                     .ThenInclude(pd => pd.Departement) // Include the Departement from PersonneDepartement
                     .Include(b => b.AppelOffre) // Include the AppelOffre
-                    .Where(b => b.AppelOffre.AppelOffreID == appelOffreID)
+                    .Where(b => b.AppelOffre.AppelOffreID == createRessourceDto.AppelOffreID)
                     .ToListAsync();
 
                 if (besoins == null || !besoins.Any())
@@ -193,7 +278,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
                             Ram = ordinateurCatalog.Ram,
                             DisqueDur = ordinateurCatalog.DisqueDur,
                             Ecran = ordinateurCatalog.Ecran,
-                            DateLivraison = deliveryDate,
+                            DateLivraison = createRessourceDto.DeliveryDate,
                             FournisseurId = fournisseur,
                             PersonneDepartement = besoin.PersonneDepartementId,
                             Departement = besoin.PersonneDepartementId?.Departement
@@ -209,7 +294,7 @@ namespace GestionDesRessourcesMaterielles.Controllers
                             Vitesseimpression = imprimanteCatalog.Vitesseimpression,
                             Resolution = imprimanteCatalog.Resolution,
                             Marque = imprimanteCatalog.Marque,
-                            DateLivraison = deliveryDate,
+                            DateLivraison = createRessourceDto.DeliveryDate,
                             FournisseurId = fournisseur,
                             PersonneDepartement = besoin.PersonneDepartementId,
                             Departement = besoin.PersonneDepartementId?.Departement
@@ -218,9 +303,11 @@ namespace GestionDesRessourcesMaterielles.Controllers
                         // Add the Imprimante to the context
                         _authContext.Imprimantes.Add(imprimante);
                     }
+
+                    // Update OffreFournisseur status
                     var offresFournisseur = await _authContext.offreFournisseurs
-                                            .Where(o => o.AppelOffreId.AppelOffreID == besoin.AppelOffre.AppelOffreID)
-                                            .ToListAsync();
+                                         .Where(o => o.AppelOffreId.AppelOffreID == besoin.AppelOffre.AppelOffreID)
+                                         .ToListAsync();
 
                     if (offresFournisseur == null || !offresFournisseur.Any())
                     {
@@ -232,9 +319,6 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     {
                         offreFournisseur.IsApproved = true;
                     }
-
-                    // Save changes to the database
-                    await _authContext.SaveChangesAsync();
                 }
 
                 // Save changes to the context
@@ -264,6 +348,55 @@ namespace GestionDesRessourcesMaterielles.Controllers
             }
         }
 
+    }
+
+    public class AppelOffreDto
+    {
+        public int AppelOffreID { get; set; }
+        public string DepartementName { get; set; }
+        public List<OrdinateurBesoinDto> OrdinateurBesoins { get; set; }
+        public List<ImprimanteBesoinDto> ImprimanteBesoins { get; set; }
+        public bool? IsAccepted {  get; set; }
+    }
+
+    public class OrdinateurBesoinDto
+    {
+        public int BesoinId { get; set; }
+        public string Marque { get; set; }
+        public string Cpu { get; set; }
+        public string Ram { get; set; }
+        public string DisqueDur { get; set; }
+        public string Ecran { get; set; }
+        public int NumberOfRessource { get; set; }
+    }
+
+    public class ImprimanteBesoinDto
+    {
+        public int BesoinId { get; set; }
+        public string Marque { get; set; }
+        public int Vitesseimpression { get; set; }
+        public string Resolution { get; set; }
+        public int NumberOfRessource { get; set; }
+    }
+
+    public class SubmitOfferRequest
+    {
+        public int AppelOffreId { get; set; }
+        public int FournisseurId { get; set; }
+        public double Montant { get; set; }
+    }
+
+    public class UpdateOfferDto
+    {
+        public int AppelOffreId { get; set; }
+        public double Montant { get; set; }
+    }
+
+    public class CreateRessourceDto
+    {
+        public int FournisseurID { get; set; }
+        public int AppelOffreID { get; set; }
+        public DateTime DeliveryDate { get; set; }
     }
 }
 
