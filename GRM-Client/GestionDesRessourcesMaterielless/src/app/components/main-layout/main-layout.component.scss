@@ -35,4 +35,18 @@ body {
 .dynamic-component-child{
   width: 99%;
   height: 99%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.top{
+  height: 95%;
+}
+
+.bot{
+  width: 100%;
+  height: 10%;
+  text-align: right;
+  padding-top: 20px;
 }

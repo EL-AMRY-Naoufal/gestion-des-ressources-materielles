@@ -1,18 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     <div id="nav-bar">
-        <app-sidebar #sidebarRef></app-sidebar>
+      <app-sidebar #sidebarRef></app-sidebar>
     </div>
     <div class="dynamic-component">
-        <div class="dynamic-component-child">
-            <router-outlet></router-outlet>
+      <div class="dynamic-component-child">
+        <div class="top">
+          <router-outlet></router-outlet>
         </div>
+        <div class="bot">
+          <button
+          (click)="sendDemandeBesoinToEnseignants()"
+            mat-raised-button
+            #tooltip="matTooltip"
+            matTooltip="Demander aux enseignants du département d’envoyer leurs besoins en termes de matériels"
+            [matTooltipPosition]="position.value!"
+            matTooltipHideDelay="0"
+            aria-label="Button that displays a tooltip that hides when scrolled out of the container"
+            class="example-button"
+            *ngIf="role == 'chefDepartement'"
+          >
+          Demande de Besoins
+          </button>
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>
