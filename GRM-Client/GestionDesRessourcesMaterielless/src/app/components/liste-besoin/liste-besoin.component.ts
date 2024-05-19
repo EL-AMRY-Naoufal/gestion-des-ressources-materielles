@@ -62,6 +62,7 @@ export class ListeBesoinComponent implements OnInit, AfterViewInit  {
     this.ressponsableRessourceService.getBesoinsForResponsableRessources().subscribe((besoins: Besoin[]) => {
       this.besoinDataSource.data = besoins;
     }, error => {
+
       console.error('Error occurred while fetching besoins for responsible resources:', error);
     });
   }
@@ -70,10 +71,12 @@ export class ListeBesoinComponent implements OnInit, AfterViewInit  {
     this.ressponsableRessourceService.createAppelOffre().subscribe(
       () => {
         // Success callback
+        this.fetchAllBesoinsForRess();
         console.log('Appel d\'offre créé avec succès');
         // Optionally, you can refresh the data or show a success message
       },
       error => {
+        this.fetchAllBesoinsForRess();
         // Error callback
         console.error('Une erreur est survenue lors de la création de l\'appel d\'offre:', error);
         // Optionally, you can handle the error or show an error message
@@ -88,8 +91,10 @@ export class ListeBesoinComponent implements OnInit, AfterViewInit  {
     console.log(besoinIds);
     console.log(typeof besoinIds);
     this.chefDeparetementService.approveBesoins(userId, besoinIds).subscribe(() => {
+      this.fetchBesoins();
       // Success callback
     }, error => {
+      this.fetchBesoins();
       // Error callback
       console.error('Error occurred while approving besoins:', error);
       // Optionally handle the error here, e.g., display an error message to the user
