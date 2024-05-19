@@ -5,6 +5,8 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using GestionDesRessourcesMaterielles.Data.BackgroundServices;
+using System.Diagnostics;
 
 namespace GestionDesRessourcesMaterielles
 {
@@ -14,14 +16,17 @@ namespace GestionDesRessourcesMaterielles
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            
+
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
 
             builder.Services.AddCors(option =>
             {
                 option.AddPolicy("MyPolicy", builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200")
+                    builder.WithOrigins("http://localhost:35406")
                         .AllowAnyMethod()
                         .AllowAnyHeader();
                 });
@@ -35,6 +40,8 @@ namespace GestionDesRessourcesMaterielles
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddHostedService<LivredUpdaterBackgroundService>();
+           
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
             {
@@ -93,5 +100,6 @@ namespace GestionDesRessourcesMaterielles
 
             app.Run();
         }
+
     }
 }
