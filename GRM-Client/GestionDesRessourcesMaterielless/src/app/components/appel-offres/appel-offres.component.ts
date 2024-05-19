@@ -64,6 +64,7 @@ export class AppelOffresComponent implements OnInit {
         this.montant = 0;
       },
       (error) => {
+        this.fetchAppelOffres();
         console.error('Error submitting offer:', error);
       }
     );
