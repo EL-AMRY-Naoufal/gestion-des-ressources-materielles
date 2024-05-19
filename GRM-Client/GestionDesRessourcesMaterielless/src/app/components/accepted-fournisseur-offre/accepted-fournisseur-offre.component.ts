@@ -59,9 +59,11 @@ export class AcceptedFournisseurOffreComponent {
 
     this.fournisseurService.createRessource(this.currentUser.userId, appelOffreID, deliveryDateToSend).subscribe(
       response => {
+        this.fetchAccpetedAppelOffres(); 
         console.log('Ressource created successfully', response);
       },
       error => {
+        this.fetchAccpetedAppelOffres(); 
         console.error('Error creating ressource', error);
       }
     );
