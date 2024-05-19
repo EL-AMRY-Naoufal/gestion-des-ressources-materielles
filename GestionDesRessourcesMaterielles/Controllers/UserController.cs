@@ -41,7 +41,12 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     Token = CreateJwtToken(chefDepartement),
                     Message = "Login Success",
                     User = chefDepartement,
-                    Role = "chefDepartement"
+                    Role = "chefDepartement",
+                    SideBar = new List<RouteConfig>
+                                    {
+                                        new RouteConfig { Name = "View Besoins", Url = "/mainLayout/listBesoins" },
+                                        new RouteConfig { Name = "View Resources", Url = "/mainLayout/listeRessources" }
+                                    }
                 });
             }
 
@@ -53,7 +58,13 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     Token = CreateJwtToken(fournisseur),
                     Message = "Login Success",
                     User = fournisseur,
-                    Role = "fournisseur"
+                    Role = "fournisseur",
+                    SideBar = new List<RouteConfig>
+                                {
+                                    new RouteConfig { Name = "Submit Offer", Url = "/mainLayout/appelOffres" },
+                                    new RouteConfig { Name = "View Appel Offres", Url = "/mainLayout/offreFournisseur" },
+                                    new RouteConfig { Name = "Accepted Offres", Url = "/mainLayout/acceptedOffreFournisseur" }
+                                }
                 });
             }
 
@@ -67,7 +78,11 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     Token = CreateJwtToken(personneDepartement),
                     Message = "Login Success",
                     User = personneDepartement,
-                    Role = "personneDepartement"
+                    Role = "personneDepartement",
+                    SideBar = new List<RouteConfig>
+                                    {
+                                        new RouteConfig { Name = "Send Resource Request", Url = "/mainLayout/sendBesoins" }
+                                    }
                 });
             }
 
@@ -79,7 +94,13 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     Token = CreateJwtToken(responsableRessources),
                     Message = "Login Success",
                     User = responsableRessources,
-                    Role = "responsableRessources"
+                    Role = "responsableRessources",
+                    SideBar = new List<RouteConfig>
+                                    {
+                                        new RouteConfig { Name = "View Besoins", Url = "/mainLayout/listBesoins" },
+                                        new RouteConfig { Name = "View offre des fournisseur", Url = "/mainLayout/offreFournisseur" }
+
+                                    }
                 });
             }
 
@@ -91,12 +112,13 @@ namespace GestionDesRessourcesMaterielles.Controllers
                     Token = CreateJwtToken(serviceMaintenance),
                     Message = "Login Success",
                     User = serviceMaintenance,
-                    Role = "serviceMaintenance"
+                    Role = "serviceMaintenance",
                 });
             }
 
             return NotFound(new { Message = "User not found or invalid credentials!" });
         }
+
         private bool VerifyPassword(string enteredPassword, string hashedPassword)
         {
             var passwordHasher = new PasswordHasher<User>();
@@ -301,5 +323,11 @@ namespace GestionDesRessourcesMaterielles.Controllers
         public string Email { get; set; }
         public string Password { get; set; }
         public string Name { get; set; }
+    }
+
+    public class RouteConfig
+    {
+        public string Name { get; set; }
+        public string Url { get; set; }
     }
 }
