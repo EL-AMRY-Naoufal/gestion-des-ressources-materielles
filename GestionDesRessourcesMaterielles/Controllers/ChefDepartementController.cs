@@ -125,13 +125,13 @@ namespace GestionDesRessourcesMaterielles.Controllers
 
                 // Retrieve all Ordinateurs associated with the department
                 var ordinateurs = await _authContext.Ordinateurs
-                    .Where(o => o.Departement.DepartmentId == departementId)
+                    .Where(o => o.Departement.DepartmentId == departementId && o.Livred == true)
                     .Include(o => o.PersonneDepartement) // Include PersonneDepartement
                     .ToListAsync();
 
                 // Retrieve all Imprimantes associated with the department
                 var imprimantes = await _authContext.Imprimantes
-                    .Where(i => i.Departement.DepartmentId == departementId)
+                    .Where(i => i.Departement.DepartmentId == departementId && i.Livred == true)
                     .Include(i => i.PersonneDepartement) // Include PersonneDepartement
                     .ToListAsync();
 
