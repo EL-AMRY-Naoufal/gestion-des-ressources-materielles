@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import {NgToastService} from 'ng-angular-popup';
-import { LoginService } from '../services/login.service';
+import { LoginService } from '../services/login/login.service';
 
 @Injectable({
   providedIn: 'root'

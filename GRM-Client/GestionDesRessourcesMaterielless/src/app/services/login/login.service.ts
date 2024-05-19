@@ -44,4 +44,21 @@ export class LoginService {
     const userJSON = localStorage.getItem('role');
     return userJSON ? JSON.parse(userJSON) : null;
   }
+
+  storeSidebar(sidebar: any[]) {
+    const localSidebarData = [...sidebar]; // Make a copy of the sidebar data
+    // You can perform any additional processing here if needed
+    localStorage.setItem('sidebarData', JSON.stringify(localSidebarData)); // Store in local storage
+  }
+
+  // Method to retrieve the sidebar data from local storage
+  getSidebar() {
+    const storedData = localStorage.getItem('sidebarData');
+    try {
+      return storedData ? JSON.parse(storedData) : null; // Parse the stored data from local storage
+    } catch (error) {
+      console.error('Error parsing sidebar data:', error);
+      return null;
+    }
+  }
 }

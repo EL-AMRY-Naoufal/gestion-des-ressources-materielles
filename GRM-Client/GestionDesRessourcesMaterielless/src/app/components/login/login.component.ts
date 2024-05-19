@@ -38,8 +38,10 @@ export class LoginComponent implements OnInit {
         this.loginForm.reset();
         this.loginService.storeToken(res.token);
         this.loginService.storeUser(res.user);
-        this.loginService.storeRole(res.role)
-        this.router.navigate(["/mainLayout/listeRessources"])
+        this.loginService.storeRole(res.role);
+        this.loginService.storeSidebar(res.sideBar);
+        console.log(res.sidebar)
+        this.router.navigate(["/mainLayout/listeRessources"]);
       },
       error: (err) => {
         this.toast.error({

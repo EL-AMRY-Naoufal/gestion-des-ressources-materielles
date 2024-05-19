@@ -1,150 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     <div *ngIf="appelOffres.length > 0">
-        <div
-          *ngFor="let appelOffre of appelOffres"
-          class="mat-elevation-z8 appel-offre-section"
-          style="margin: 10px"
-        >
-          <mat-accordion>
-            <mat-expansion-panel
-              (opened)="panelOpenState = true"
-              (closed)="panelOpenState = false"
+      <div
+        *ngFor="let appelOffre of appelOffres"
+        class="mat-elevation-z8 appel-offre-section"
+        style="margin: 10px"
+      >
+        <mat-accordion>
+          <mat-expansion-panel
+            (opened)="panelOpenState = true"
+            (closed)="panelOpenState = false"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Offre de Departement : {{ appelOffre.departementName }}
+              </mat-panel-title>
+
+              <mat-panel-title *ngIf="appelOffre.ordinateurBesoins.length > 0">
+                Ordinateurs : {{ appelOffre.ordinateurBesoins.length }}
+              </mat-panel-title>
+
+              <mat-panel-title *ngIf="appelOffre.imprimanteBesoins.length > 0">
+                Imprimantes : {{ appelOffre.imprimanteBesoins.length }}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <table
+              *ngIf="appelOffre.ordinateurBesoins.length > 0"
+              mat-table
+              [dataSource]="appelOffre.ordinateurBesoins"
+              class="mat-table"
             >
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  Offre de Departement : {{ appelOffre.departementName }}
-                </mat-panel-title>
-  
-                <mat-panel-title *ngIf="appelOffre.ordinateurBesoins.length > 0">
-                  Ordinateurs : {{ appelOffre.ordinateurBesoins.length }}
-                </mat-panel-title>
-  
-                <mat-panel-title *ngIf="appelOffre.imprimanteBesoins.length > 0">
-                   Imprimantes : {{ appelOffre.imprimanteBesoins.length }}
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <table
-                *ngIf="appelOffre.ordinateurBesoins.length > 0"
-                mat-table
-                [dataSource]="appelOffre.ordinateurBesoins"
-                class="mat-table"
+              <ng-container matColumnDef="marque">
+                <th mat-header-cell *matHeaderCellDef>Marque</th>
+                <td mat-cell *matCellDef="let besoin">{{ besoin.marque }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="cpu">
+                <th mat-header-cell *matHeaderCellDef>CPU</th>
+                <td mat-cell *matCellDef="let besoin">{{ besoin.cpu }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="ram">
+                <th mat-header-cell *matHeaderCellDef>RAM</th>
+                <td mat-cell *matCellDef="let besoin">{{ besoin.ram }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="disqueDur">
+                <th mat-header-cell *matHeaderCellDef>Disque Dur</th>
+                <td mat-cell *matCellDef="let besoin">
+                  {{ besoin.disqueDur }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="ecran">
+                <th mat-header-cell *matHeaderCellDef>Ecran</th>
+                <td mat-cell *matCellDef="let besoin">{{ besoin.ecran }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="numberOfRessource">
+                <th mat-header-cell *matHeaderCellDef>Number Of Ressource</th>
+                <td mat-cell *matCellDef="let besoin">
+                  {{ besoin.numberOfRessource }}
+                </td>
+              </ng-container>
+
+              <tr
+                mat-header-row
+                *matHeaderRowDef="displayedOrdinateurColumns"
+              ></tr>
+              <!-- Define row -->
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedOrdinateurColumns"
+              ></tr>
+            </table>
+            <table
+              *ngIf="appelOffre.imprimanteBesoins.length > 0"
+              mat-table
+              [dataSource]="appelOffre.imprimanteBesoins"
+              class="mat-table"
+            >
+              <ng-container matColumnDef="marque">
+                <th mat-header-cell *matHeaderCellDef>Marque</th>
+                <td mat-cell *matCellDef="let besoin">{{ besoin.marque }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="vitesseimpression">
+                <th mat-header-cell *matHeaderCellDef>Vitesse Impression</th>
+                <td mat-cell *matCellDef="let besoin">
+                  {{ besoin.vitesseimpression }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="resolution">
+                <th mat-header-cell *matHeaderCellDef>Resolution</th>
+                <td mat-cell *matCellDef="let besoin">
+                  {{ besoin.resolution }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="numberOfRessource">
+                <th mat-header-cell *matHeaderCellDef>Number Of Ressource</th>
+                <td mat-cell *matCellDef="let besoin">
+                  {{ besoin.numberOfRessource }}
+                </td>
+              </ng-container>
+
+              <tr
+                mat-header-row
+                *matHeaderRowDef="displayedImprimanteColumns"
+              ></tr>
+              <!-- Define row -->
+              <tr
+                mat-row
+                *matRowDef="let row; columns: displayedImprimanteColumns"
+              ></tr>
+            </table>
+            <div
+              class="bot"
+              *ngIf="appelOffre.isAccepted == null && role == 'fournisseur'"
+            >
+              <mat-form-field
+                class="example-full-width"
+                style="margin-right: 20px"
               >
-                <ng-container matColumnDef="marque">
-                  <th mat-header-cell *matHeaderCellDef>Marque</th>
-                  <td mat-cell *matCellDef="let besoin">{{ besoin.marque }}</td>
-                </ng-container>
-  
-                <ng-container matColumnDef="cpu">
-                  <th mat-header-cell *matHeaderCellDef>CPU</th>
-                  <td mat-cell *matCellDef="let besoin">{{ besoin.cpu }}</td>
-                </ng-container>
-  
-                <ng-container matColumnDef="ram">
-                  <th mat-header-cell *matHeaderCellDef>RAM</th>
-                  <td mat-cell *matCellDef="let besoin">{{ besoin.ram }}</td>
-                </ng-container>
-  
-                <ng-container matColumnDef="disqueDur">
-                  <th mat-header-cell *matHeaderCellDef>Disque Dur</th>
-                  <td mat-cell *matCellDef="let besoin">
-                    {{ besoin.disqueDur }}
-                  </td>
-                </ng-container>
-  
-                <ng-container matColumnDef="ecran">
-                  <th mat-header-cell *matHeaderCellDef>Ecran</th>
-                  <td mat-cell *matCellDef="let besoin">{{ besoin.ecran }}</td>
-                </ng-container>
-  
-                <ng-container matColumnDef="numberOfRessource">
-                  <th mat-header-cell *matHeaderCellDef>Number Of Ressource</th>
-                  <td mat-cell *matCellDef="let besoin">
-                    {{ besoin.numberOfRessource }}
-                  </td>
-                </ng-container>
-  
-                <tr
-                  mat-header-row
-                  *matHeaderRowDef="displayedOrdinateurColumns"
-                ></tr>
-                <!-- Define row -->
-                <tr
-                  mat-row
-                  *matRowDef="let row; columns: displayedOrdinateurColumns"
-                ></tr>
-              </table>
-              <table
-                *ngIf="appelOffre.imprimanteBesoins.length > 0"
-                mat-table
-                [dataSource]="appelOffre.imprimanteBesoins"
-                class="mat-table"
+                <mat-label>Prix</mat-label>
+                <input
+                  matInput
+                  placeholder="Votre Prix"
+                  [(ngModel)]="montant"
+                />
+              </mat-form-field>
+              <button
+                mat-raised-button
+                #tooltip="matTooltip"
+                matTooltip="Envoyer votre Offre"
+                [matTooltipPosition]="position.value!"
+                matTooltipHideDelay="0"
+                aria-label="Button that displays a tooltip that hides when scrolled out of the container"
+                class="example-button"
+                (click)="changeMontant(appelOffre.appelOffreID)"
               >
-                <ng-container matColumnDef="marque">
-                  <th mat-header-cell *matHeaderCellDef>Marque</th>
-                  <td mat-cell *matCellDef="let besoin">{{ besoin.marque }}</td>
-                </ng-container>
-  
-                <ng-container matColumnDef="vitesseimpression">
-                  <th mat-header-cell *matHeaderCellDef>Vitesse Impression</th>
-                  <td mat-cell *matCellDef="let besoin">
-                    {{ besoin.vitesseimpression }}
-                  </td>
-                </ng-container>
-  
-                <ng-container matColumnDef="resolution">
-                  <th mat-header-cell *matHeaderCellDef>Resolution</th>
-                  <td mat-cell *matCellDef="let besoin">
-                    {{ besoin.resolution }}
-                  </td>
-                </ng-container>
-  
-                <ng-container matColumnDef="numberOfRessource">
-                  <th mat-header-cell *matHeaderCellDef>Number Of Ressource</th>
-                  <td mat-cell *matCellDef="let besoin">
-                    {{ besoin.numberOfRessource }}
-                  </td>
-                </ng-container>
-  
-                <tr
-                  mat-header-row
-                  *matHeaderRowDef="displayedImprimanteColumns"
-                ></tr>
-                <!-- Define row -->
-                <tr
-                  mat-row
-                  *matRowDef="let row; columns: displayedImprimanteColumns"
-                ></tr>
-              </table>
-              <div class="bot" *ngIf="appelOffre.isAccepted == null">
-                  <mat-form-field class="example-full-width" style="margin-right: 20px;">
-                      <mat-label>Prix</mat-label>
-                      <input matInput placeholder="Votre Prix" [(ngModel)]="montant">
-                    </mat-form-field>
-                <button
-                  mat-raised-button
-                  #tooltip="matTooltip"
-                  matTooltip="Envoyer votre Offre"
-                  [matTooltipPosition]="position.value!"
-                  matTooltipHideDelay="0"
-                  aria-label="Button that displays a tooltip that hides when scrolled out of the container"
-                  class="example-button"
-                  (click)="changeMontant(appelOffre.appelOffreID)"
-                >
-                  Change Montant
-                </button>
-              </div>
-            </mat-expansion-panel>
-          </mat-accordion>
-        </div>
+                Change Montant
+              </button>
+            </div>
+
+            <div
+              class="bot"
+              *ngIf="appelOffre.isAccepted == null && role == 'responsableRessources'"
+            >
+            <button
+            mat-raised-button
+            #tooltip="matTooltip"
+            matTooltip="Envoyer votre Offre"
+            [matTooltipPosition]="position.value!"
+            matTooltipHideDelay="0"
+            aria-label="Button that displays a tooltip that hides when scrolled out of the container"
+            class="example-button"
+            (click)="handleOffer(appelOffre.appelOffreID, false)"
+            style="margin-right: 6px;"
+          >
+            Refuser
+          </button>
+              <button
+                mat-raised-button
+                #tooltip="matTooltip"
+                matTooltip="Envoyer votre Offre"
+                [matTooltipPosition]="position.value!"
+                matTooltipHideDelay="0"
+                aria-label="Button that displays a tooltip that hides when scrolled out of the container"
+                class="example-button"
+                (click)="handleOffer(appelOffre.appelOffreID, true)"
+              >
+                Accepter
+              </button>
+            </div>
+            
+          </mat-expansion-panel>
+        </mat-accordion>
       </div>
-  
-      <div *ngIf="appelOffres.length === 0">No appel offres available.</div>
-</body>
+    </div>
+
+    <div *ngIf="appelOffres.length === 0">No appel offres available.</div>
+  </body>
 </html>

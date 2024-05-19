@@ -27,4 +27,15 @@ export class ResponnsableRessourceService {
       })
     );
   }
+
+  getOffreFournisseurs(): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}offresFournisseurs`
+    );
+  }
+
+  handleOffreFournisseur(offreFournisseurId: number, accept: boolean): Observable<any> {
+    const body = { offreFournisseurId: offreFournisseurId, accept: accept };
+    return this.http.post<any>(`${this.baseUrl}handleOffreFournisseur`, body);
+  }
 }

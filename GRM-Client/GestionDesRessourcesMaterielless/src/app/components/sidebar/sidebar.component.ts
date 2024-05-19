@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Input,
   OnInit,
   Output,
 } from '@angular/core';
@@ -13,6 +14,8 @@ import { LoginService } from '../../services/login/login.service';
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent implements OnInit {
+  
+  sidebarContent: any;
   @Output() sidebarStatusChanged = new EventEmitter<{
     isOpen: boolean;
     width: number;
@@ -26,7 +29,9 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.loginService.getUser();
-    console.log(this.currentUser)
+   
+    this.sidebarContent = this.loginService.getSidebar()
+    console.log(this.sidebarContent);
     this.sidebarStatusChanged.emit({
       isOpen: this.isSidebarOpen,
       width: this.getBodyWidth(),

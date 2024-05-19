@@ -3,6 +3,7 @@ import { LoginService } from '../../services/login/login.service';
 import { FournisseurService } from '../../services/fournisseur/fournisseur.service';
 import { FormControl } from '@angular/forms';
 import { TooltipPosition } from '@angular/material/tooltip';
+import { ResponnsableRessourceService } from '../../services/responnsableRessource/responnsable-ressource.service';
 
 @Component({
   selector: 'app-offre-fournisseur',
@@ -15,6 +16,8 @@ export class OffreFournisseurComponent {
   appelOffres: any[] = [];
   panelOpenState = false;
   montant: number = 0;
+
+  role : any;
 
   positionOptions: TooltipPosition[] = ['below', 'above', 'left', 'right'];
   position = new FormControl(this.positionOptions[0]);
@@ -34,14 +37,34 @@ export class OffreFournisseurComponent {
     'numberOfRessource'
   ];
 
-  constructor(private fournisseurService : FournisseurService, private loginService: LoginService){}
+  constructor(private fournisseurService : FournisseurService, private loginService: LoginService, private ResponsableRessurces : ResponnsableRessourceService){}
 
   ngOnInit(): void {
     this.currentUser = this.loginService.getUser();
-    this.getOffreFournisseur();
+    this.role = this.loginService.getRole();
+    if(this.role == "responsableRessources"){
+      this.getOffreFournisseurs();
+    }else{
+      this.getOffreFournisseur();
+    }
   }
   getOffreFournisseur() {
     this.fournisseurService.getOffreFournisseur(this.currentUser.userId).subscribe(
+      (response) => {
+        this.appelOffres = response;
+        console.log(this.appelOffres);
+        // Reset the montant
+        this.montant = 0;
+      },
+      (error) => {
+        console.error('Error submitting offer:', error);
+      }
+    );
+  }
+
+  getOffreFournisseurs() {
+    console.log("dsd")
+    this.ResponsableRessurces.getOffreFournisseurs().subscribe(
       (response) => {
         this.appelOffres = response;
         console.log(this.appelOffres);
@@ -63,5 +86,19 @@ export class OffreFournisseurComponent {
         console.error('Error submitting offer:', error);
       }
     );
+  }
+
+  handleOffer(offreFournisseurId:any, accept: boolean) {
+    console.log(offreFournisseurId)
+    this.ResponsableRessurces.handleOffreFournisseur(offreFournisseurId, accept)
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+        },
+        error: (error) => {
+          console.error(error);
+          // Handle the error as needed
+        }
+      });
   }
 }

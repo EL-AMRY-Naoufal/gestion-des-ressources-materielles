@@ -52,7 +52,6 @@ export class SendBesoinsComponent implements AfterViewInit {
     this.fetchResources();
   }
 
-
   fetchResources() {
     this.fournisseurService.getCatalogs().subscribe((data: any) => {
       console.log(data);
@@ -89,10 +88,9 @@ export class SendBesoinsComponent implements AfterViewInit {
   imprimanteQuantities: { [key: string]: number } = {};
   ordinateurQuantities: { [key: string]: number } = {};
 
-  
   sendResourceRequests() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const userId = user.userId; 
+    const userId = user.userId;
 
     const imprimanteRequests: any = {};
     const ordinateurRequests: any = {};
@@ -100,9 +98,9 @@ export class SendBesoinsComponent implements AfterViewInit {
       imprimanteRequests[row.RessourceCatalogID] = 2;
     });
 
-  Array.from(this.clickedRowsOrdi).forEach(row => {
-    ordinateurRequests[row.RessourceCatalogID] = 2;
-  });
+    Array.from(this.clickedRowsOrdi).forEach((row) => {
+      ordinateurRequests[row.RessourceCatalogID] = 2;
+    });
 
     const requestBody = {
       PersonneId: userId,

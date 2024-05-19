@@ -151,7 +151,18 @@
         } }
       </table>
     </ul>
-    <button (click)="sendResourceRequests()">ggggg</button>
+    <button
+            mat-raised-button
+            #tooltip="matTooltip"
+            matTooltip="Envoyer votre Offre"
+            matTooltipHideDelay="0"
+            aria-label="Button that displays a tooltip that hides when scrolled out of the container"
+            class="example-button"
+            (click)="sendResourceRequests()"
+            style="margin-right: 6px;"
+          >
+            Send
+          </button>
     }
   </body>
 </html>
