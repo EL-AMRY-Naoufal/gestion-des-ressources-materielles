@@ -7,6 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import { LoginService } from '../../services/login/login.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -25,7 +26,8 @@ export class SidebarComponent implements OnInit {
 
   currentUser: any;
 
-  constructor(private elementRef: ElementRef, private loginService: LoginService) {}
+
+  constructor(private elementRef: ElementRef, private loginService: LoginService, private router: Router) {}
 
   ngOnInit(): void {
     this.currentUser = this.loginService.getUser();
@@ -36,6 +38,7 @@ export class SidebarComponent implements OnInit {
       isOpen: this.isSidebarOpen,
       width: this.getBodyWidth(),
     });
+    
   }
 
   toggleSidebar() {
@@ -57,5 +60,9 @@ export class SidebarComponent implements OnInit {
 
   redirectToPage(url: string) {
     window.location.href = url;
+  }
+  logout() {
+      localStorage.clear();
+      this.router.navigate(["login"]);
   }
 }
