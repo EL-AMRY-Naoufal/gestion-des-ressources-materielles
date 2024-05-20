@@ -94,8 +94,10 @@ export class OffreFournisseurComponent {
       .subscribe({
         next: (response) => {
           console.log(response);
+          this.getOffreFournisseurs();
         },
         error: (error) => {
+          this.getOffreFournisseurs();
           console.error(error);
           // Handle the error as needed
         }
