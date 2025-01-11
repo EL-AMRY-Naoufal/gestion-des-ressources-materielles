@@ -29,6 +29,9 @@
               <mat-panel-title *ngIf="appelOffre.imprimanteBesoins.length > 0">
                 Imprimantes : {{ appelOffre.imprimanteBesoins.length }}
               </mat-panel-title>
+              <mat-panel-title >
+                Montant : {{ appelOffre.montant }}
+              </mat-panel-title>
             </mat-expansion-panel-header>
             <table
               *ngIf="appelOffre.ordinateurBesoins.length > 0"

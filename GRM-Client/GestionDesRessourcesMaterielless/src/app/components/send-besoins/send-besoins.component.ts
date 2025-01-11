@@ -91,32 +91,44 @@ export class SendBesoinsComponent implements AfterViewInit {
   sendResourceRequests() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const userId = user.userId;
-
+  
     const imprimanteRequests: any = {};
     const ordinateurRequests: any = {};
+  
+    // Iterate over clicked ImprimanteCatalog rows and get quantities
     Array.from(this.clickedRows).forEach((row) => {
-      imprimanteRequests[row.RessourceCatalogID] = 2;
+      const quantity = this.imprimanteQuantities[row.RessourceCatalogID] || 0; // Default to 0 if quantity is not set
+      imprimanteRequests[row.RessourceCatalogID] = quantity;
     });
-
+  
+    // Iterate over clicked OrdinateurCatalog rows and get quantities
     Array.from(this.clickedRowsOrdi).forEach((row) => {
-      ordinateurRequests[row.RessourceCatalogID] = 2;
+      const quantity = this.ordinateurQuantities[row.RessourceCatalogID] || 0; // Default to 0 if quantity is not set
+      ordinateurRequests[row.RessourceCatalogID] = quantity;
     });
-
+  
     const requestBody = {
       PersonneId: userId,
       ImprimanteRequests: imprimanteRequests,
       OrdinateurRequests: ordinateurRequests,
     };
     console.log(requestBody);
+  
     this.personneDepartementService.sendResourceRequests(requestBody).subscribe(
       (response) => {
         console.log('Resource requests sent successfully:', response);
         this.clickedRows.clear();
         this.clickedRowsOrdi.clear();
+
+        
       },
       (error) => {
+        this.clickedRows.clear(); // Empty the clickedRows Set
+        this.clickedRowsOrdi.clear();
+     
         console.error('Error sending resource requests:', error);
       }
     );
   }
+  
 }
